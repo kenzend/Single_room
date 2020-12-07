@@ -1,0 +1,154 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Playlist_1.Areas.Identity.Data
+
+@inject SignInManager<Playlist_1User> SignInManager
+@inject UserManager<Playlist_1User> UserManager
+
+
+@model Playlist_1.Models.Room
+@using System.Web
+
+@{
+    ViewData["Title"] = "Room";
+}
+
+<h1>Room</h1>
+@Html.AntiForgeryToken()
+@{
+    Playlist_1.Models.Media[] array = Model.Playlist.ToArray();
+    string[] userArray = Model.Users.ToArray();
+ }
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <button id="play_from_beginning">Play playlist</button>
+            <button id="play">Play</button>
+            <button id="pause">Pause</button>
+            <button id="next">Next track</button>
+            <br />
+            Playing track: <span id="currentlyPlayingIndex">none</span>
+        </div>
+        <div class="col-6">
+            Upload file(s): <input type="file" accept=".mp3,audio/*" id="fileInput" multiple />
+            <br />
+            Or Link:<input type="text" id="linkInput" />
+            <input type="button" id="postButton" value="Post Media" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">&nbsp;</div>
+        <div class="col-9">
+            <table id="mediaList">
+                <thead>
+                    <tr> <th>Track no.</th><th>Posted</th><th>User</th><th>Media</th><th>Controls</th> </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < array.Length; i++)
+                    {
+                        var media = array[i];
+                        if (media == null)
+                            continue;
+                        <tr id="@i">
+                            <td style="text-align: center;">@i</td>
+                            <td>@media.DatePosted.ToString("MM/dd/yyyy HH:mm")</td>
+                            <td>@media.Owner </td>
+                            @if (!media.Link.Contains("http"))
+                            {
+                                <td>
+                                    <audio id="media_@i" onended="playNext('@i');" allow="autoplay" controls>
+                                        <source src="~/room/@media.Link" />
+                                    </audio>
+                                </td>
+                            }
+                            else
+                            {
+                                if (media.Link.Contains("youtube"))
+                                {
+                                    <td>
+                                        <iframe width="560" height="315" src="//www.youtube.com/embed/@media.getYoutubeId()" frameborder="0" allowfullscreen />
+                                    </td>
+                                }
+                                else if (media.Link.Contains("spotify"))
+                                {
+
+                                }
+                                else if (media.Link.Contains("soundclound"))
+                                {
+
+                                }
+                                else
+                                {
+                                    <td /> <!-- blank -->
+                                }
+                            }
+                            <td>
+                                <button id="play_@i" onclick="play('@i');">Play</button>
+                                <button id="pause_@i" onclick="pause('@i')">Pause</button>
+                                <button id="remove_@i" onclick="remove('@i');">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1">&nbsp;</div>
+        <div class="col-9">
+            <table id="userList">
+                <thead>
+                    <tr> <th>Name</th><th>Joined</th><th>Status</th> </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <style>
+        #mediaList {
+            background: #eeeeee;
+            border: 1px solid black;
+            width: 100%;
+        }
+
+            #mediaList tr {
+                border: 1px solid black;
+            }
+
+        .highlight {
+            background: #00ff00;
+        }
+    </style>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script>
+        // this "Hack" allows the proper IDs (numbers) to be set for newly created elements on JS/client side
+        var count = @Model.Playlist.Count();
+        document.getElementById("postButton").click();
+        var user = $("#manage").html();
+        if (!user)
+            user = "anon";
+        else
+            user = user.substring(6, user.length - 1);
+    </script>
+    <script src="~/js/playlist.js"></script>
+}
