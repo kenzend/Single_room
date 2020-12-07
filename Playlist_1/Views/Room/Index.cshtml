@@ -118,7 +118,7 @@
                         var user = userArray[i];
                         if (user.Status == "online")
                         {
-                            <tr>
+                            <tr class="online">
                                 <td>@user.Name</td>
                                 <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
                                 <td>@user.Status</td>
@@ -171,7 +171,7 @@
             }
 
         #userList {
-            background: #53b15e;
+            background: #eeeeee;
             border: 1px solid black;
             width: 100%;
         }
@@ -182,6 +182,10 @@
 
         .blocked {
             background: #a02f2f;
+        }
+
+        .online {
+            background: #53b15e;
         }
 
         .offline {
