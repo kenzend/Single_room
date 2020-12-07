@@ -16,7 +16,7 @@
 @Html.AntiForgeryToken()
 @{
     Playlist_1.Models.Media[] array = Model.Playlist.ToArray();
-    string[] userArray = Model.Users.ToArray();
+    Playlist_1.Models.User[] userArray = Model.Users.ToArray();
  }
 
 <div class="container">
@@ -110,10 +110,48 @@
         <div class="col-9">
             <table id="userList">
                 <thead>
-                    <tr> <th>Name</th><th>Joined</th><th>Status</th> </tr>
+                    <tr> <th>Name</th><th>Joined</th><th>Status</th><th>Action</th> </tr>
                 </thead>
                 <tbody>
-
+                    @for (int i = 0; i < userArray.Length; i++)
+                    {
+                        var user = userArray[i];
+                        if (user.Status == "online")
+                        {
+                            <tr>
+                                <td>@user.Name</td>
+                                <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>@user.Status</td>
+                                <td>
+                                    <button id="block_@user.Name" onclick="block('@user.Name');">Block</button>
+                                    <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                </td>
+                            </tr>
+                        }
+                        if (user.Status == "offline")
+                        {
+                            <tr class="offline">
+                                <td>@user.Name</td>
+                                <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>@user.Status</td>
+                                <td>
+                                    <button id="block_@user.Name" onclick="block('@user.Name');">Block</button>
+                                    <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                </td>
+                            </tr>
+                        }
+                        if (user.Status == "blocked")
+                        {
+                            <tr class="blocked">
+                                <td>@user.Name</td>
+                                <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
+                                <td>@user.Status</td>
+                                <td>
+                                    <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                </td>
+                            </tr>
+                        }
+                    }
                 </tbody>
             </table>
         </div>
@@ -131,6 +169,24 @@
             #mediaList tr {
                 border: 1px solid black;
             }
+
+        #userList {
+            background: #53b15e;
+            border: 1px solid black;
+            width: 100%;
+        }
+
+            #userList tr {
+                border: 1px solid black;
+            }
+
+        .blocked {
+            background: #a02f2f;
+        }
+
+        .offline {
+            background: #eeeeee;
+        }
 
         .highlight {
             background: #00ff00;

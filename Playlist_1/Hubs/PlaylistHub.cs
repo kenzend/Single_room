@@ -30,6 +30,9 @@ namespace Playlist_1.Hubs
 
         public async Task RemoveMedia(string user, string index)
         {
+            if (user.Contains("anon"))
+                return;
+
             if (!Program.room.Playlist[int.Parse(index)].Link.Contains("http")) // Delete the file in the system associated with this to be removed media
             {
                 string wwwRoot = _hostEnvironment.WebRootPath;

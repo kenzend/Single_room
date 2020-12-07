@@ -10,20 +10,14 @@ namespace Playlist_1.Models
 
         public List<Media> Playlist;
 
-        public List<string> Users;
-
-        public List<string> ActiveUsers;
-
-        public List<string> Blocked;
+        public List<User> Users;
 
         public int AnonIndex;
 
         public Room()
         {
             Playlist = new List<Media>();
-            Users = new List<string>();
-            ActiveUsers = new List<string>();
-            Blocked = new List<string>();
+            Users = new List<User>();
             AnonIndex = 0;
         }
     }
