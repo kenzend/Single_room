@@ -11,7 +11,7 @@ $("#postButton").hide();
  */
 connection.on("ReceiveMedia", function (time, user, message) {
     if (!message.includes("http")) {
-        $("#mediaList > tbody").append(`<tr id="${count}"><td style="text-align: center;">${count}</td><td>${time}</td><td>${user}</td><td><audio id="media_${count}" onended="playNext('${count}');" allow="autoplay" controls><source src="/room/${message}" /></audio></td><td><button id="play_${count}" onclick="play('${count}');">Play</button><button id="pause_${count}" onclick="document.getElementById('media_${count}').pause()">Pause</button><button id="remove_${count}" onclick="remove('${count}');">Remove</button></td></tr>`);
+        $("#mediaList > tbody").append(`<tr id="${count}"><td style="text-align: center;">${count}</td><td>${time}</td><td>${user}</td><td><audio id="media_${count}" onended="playNext('${count}');" allow="autoplay" controls><source src="/room/${message}" /></audio></td><td><button id="play_${count}" onclick="play('${count}');">Play</button><button id="pause_${count}" onclick="pause('${count}');">Pause</button><button id="remove_${count}" onclick="remove('${count}');">Remove</button></td></tr>`);
     }
     else
     {
@@ -46,6 +46,46 @@ connection.on("PauseMedia", function (index) {
     document.getElementById('media_' + index).pause();
 });
 
+connection.on("UserJoined", function (user, status, role, joined) {
+    var old_offline = document.getElementById(user);
+    if (old_offline != null)
+        document.getElementById(user).parentNode.removeChild(old_offline);
+    $("#userList > tbody").prepend(`<tr id="${user}" class="online"><td>${user}</td><td>${joined}</td><td>${role}</td><td><button id="promote_${user}" onclick="promote('${user}');">Promote</button><button id="block_${user}" onclick="block('${user}');">Block</button><button id="remove_media_of_${user}" onclick="remove_media_of('${user}');">Remove Media(s)</button><button id="demote_${user}" onclick="demote('${user}');">Demote</button></td><td>${status}</td></tr>`);
+    
+});
+
+connection.on("UserOff", function (user, status, role, joined) {
+    var old_online = document.getElementById(user);
+    if (old_online != null)
+        document.getElementById(user).parentNode.removeChild(old_online);
+    $("#userList > tbody").append(`<tr id="${user}" class="offline"><td>${user}</td><td>${joined}</td><td>${role}</td><td><button id="promote_${user}" onclick="promote('${user}');">Promote</button><button id="block_${user}" onclick="block('${user}');">Block</button><button id="remove_media_of_${user}" onclick="remove_media_of('${user}');">Remove Media(s)</button><button id="demote_${user}" onclick="demote('${user}');">Demote</button></td><td>${status}</td></tr>`);
+});
+
+connection.on("RemoveUser", function (user) {
+    var to_be_removed = document.getElementById(user);
+    document.getElementById(user).parentNode.removeChild(to_be_removed);
+});
+
+connection.on("Leave", function (user) {
+    connection.stop();
+});
+
+connection.on("Promoted", function (user, new_role) {
+    document.getElementById(user).getElementsByTagName("td").item(2).innerText = new_role;
+});
+
+connection.on("Demoted", function (user, new_role) {
+    document.getElementById(user).getElementsByTagName("td").item(2).innerText = new_role;
+});
+
+connection.on("Blocked", function (user, status, role, joined) {
+    var old = document.getElementById(user);
+    if (old != null)
+        document.getElementById(user).parentNode.removeChild(old);
+    $("#userList > tbody").append(`<tr id="${user}" class="blocked"><td>${user}</td><td>${joined}</td><td>${role}</td><td><button id="unblock_${user}" onclick="unblock('${user}');">Unblock</button><button id="remove_media_of_${user}" onclick="remove_media_of('${user}');">Remove Media(s)</button></td><td>${status}</td></tr>`);
+});
+
+
 /**
  *  Main initiation of web socket connection (via signalR)
  */
@@ -54,14 +94,22 @@ connection
     .then(
         function () {
             $("#postButton").show();
+            connection.invoke("JoinRoom", user)
+                .catch(function (err) {
+                    return console.error(err.toString());
+                });
         })
     .catch(
         function (err) {
             return console.error(err.toString());
         });
 
+
 $("#postButton").click(
     function (event) {
+        var userStatus = document.getElementById(user).getElementsByTagName("td").item(4).innerText;
+        if (userStatus == "blocked")
+            return;
         var message = $("#linkInput").val();
         var input = document.getElementById('fileInput');
         var files = input.files;
@@ -220,8 +268,43 @@ function play(index) {
 }
 
 function pause(index) {
-    connection.invoke("Pause", user, index)
+    connection.invoke("Pause", index)
         .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+
+function promote(name) {
+    connection.invoke("Promote", name)
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+
+function demote(name) {
+    connection.invoke("Demote", name)
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+
+function block(name) {
+    connection.invoke("Block", name)
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+
+function remove_media_of(name) {
+    connection.invoke("RemoveMediaOf", name)
+        .catch(function (err) {
+            return console.error(err.toString());
+        });
+}
+
+function unblock(name) {
+    connection.invoke("Unblock", name)
+        .catch (function (err) {
             return console.error(err.toString());
         });
 }

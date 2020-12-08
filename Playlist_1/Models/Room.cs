@@ -10,14 +10,14 @@ namespace Playlist_1.Models
 
         public List<Media> Playlist;
 
-        public List<User> Users;
+        public Dictionary<string, User> Users;
 
         public int AnonIndex;
 
         public Room()
         {
             Playlist = new List<Media>();
-            Users = new List<User>();
+            Users = new Dictionary<string, User>();
             AnonIndex = 0;
         }
     }

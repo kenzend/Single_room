@@ -16,7 +16,7 @@
 @Html.AntiForgeryToken()
 @{
     Playlist_1.Models.Media[] array = Model.Playlist.ToArray();
-    Playlist_1.Models.User[] userArray = Model.Users.ToArray();
+    Playlist_1.Models.User[] userArray = Model.Users.Values.ToArray();
  }
 
 <div class="container">
@@ -110,7 +110,7 @@
         <div class="col-9">
             <table id="userList">
                 <thead>
-                    <tr> <th>Name</th><th>Joined</th><th>Status</th><th>Action</th> </tr>
+                    <tr> <th>Name</th><th>Joined</th><th>Role</th><th>Action</th><th>Status</th> </tr>
                 </thead>
                 <tbody>
                     @for (int i = 0; i < userArray.Length; i++)
@@ -118,37 +118,53 @@
                         var user = userArray[i];
                         if (user.Status == "online")
                         {
-                            <tr class="online">
+                            <tr id="@user.Name" class="online">
                                 <td>@user.Name</td>
                                 <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
-                                <td>@user.Status</td>
+                                <td>@user.Role</td>
                                 <td>
+                                    <button id="promote_@user.Name" onclick="promote('@user.Name');">Promote</button>
                                     <button id="block_@user.Name" onclick="block('@user.Name');">Block</button>
                                     <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                    <button id="demote_@user.Name" onclick="demote('@user.Name');">Demote</button>
                                 </td>
+                                <td>@user.Status</td>
                             </tr>
                         }
+                    }
+                    @for (int i = 0; i < userArray.Length; i++)
+                    {
+                        var user = userArray[i];
                         if (user.Status == "offline")
                         {
-                            <tr class="offline">
+                            <tr id="@user.Name" class="offline">
                                 <td>@user.Name</td>
                                 <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
-                                <td>@user.Status</td>
+                                <td>@user.Role</td>
                                 <td>
+                                    <button id="promote_@user.Name" onclick="promote('@user.Name');">Promote</button>
                                     <button id="block_@user.Name" onclick="block('@user.Name');">Block</button>
                                     <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                    <button id="demote_@user.Name" onclick="demote('@user.Name');">Demote</button>
                                 </td>
+                                <td>@user.Status</td>
                             </tr>
                         }
+                    }
+                    @for (int i = 0; i < userArray.Length; i++)
+                    {
+                        var user = userArray[i];
                         if (user.Status == "blocked")
                         {
-                            <tr class="blocked">
+                            <tr id="@user.Name" class="blocked">
                                 <td>@user.Name</td>
                                 <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
-                                <td>@user.Status</td>
+                                <td>@user.Role</td>
                                 <td>
+                                    <button id="unblock_@user.Name" onclick="unblock('@user.Name');">Unblock</button>
                                     <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
                                 </td>
+                                <td>@user.Status</td>
                             </tr>
                         }
                     }
@@ -206,7 +222,7 @@
         document.getElementById("postButton").click();
         var user = $("#manage").html();
         if (!user)
-            user = "anon";
+            user = "anon" + @Model.AnonIndex.ToString();
         else
             user = user.substring(6, user.length - 1);
     </script>
