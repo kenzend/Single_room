@@ -11,30 +11,34 @@
 @{
     ViewData["Title"] = "Room";
 }
+<div class="site_text_color" style="text-align: center">
+    <h1>Room</h1>
+</div>
 
-<h1>Room</h1>
 @Html.AntiForgeryToken()
 @{
     Playlist_1.Models.Media[] array = Model.Playlist.ToArray();
     Playlist_1.Models.User[] userArray = Model.Users.Values.ToArray();
  }
 
-<div class="container">
+<div class="container playlist_box site_text_color">
     <div class="row">&nbsp;</div>
     <div class="row">
         <div class="col-6">
-            <button id="play_from_beginning">Play playlist</button>
-            <button id="play">Play</button>
-            <button id="pause">Pause</button>
-            <button id="next">Next track</button>
+            <button class="Button_Blue" id="play_from_beginning">Play playlist</button>
+            <button class="Button_Blue" id="play">Play</button>
+            <button class="Button_Green" id="pause">Pause</button>
+            <button class="Button_Orange" id="next">Next track</button>
             <br />
             Playing track: <span id="currentlyPlayingIndex">none</span>
         </div>
         <div class="col-6">
             Upload file(s): <input type="file" accept=".mp3,audio/*" id="fileInput" multiple />
             <br />
-            Or Link:<input type="text" id="linkInput" />
-            <input type="button" id="postButton" value="Post Media" />
+            Or Link: <input type="text" id="linkInput" />
+        </div>
+        <div class="col-6" style="left: 50%; margin-top: 3px">
+            <input type="button" class="Big_Button_Blue" id="postButton" value="Post Media" />
         </div>
     </div>
     <div class="row">
@@ -45,11 +49,11 @@
     <div class="row">
         <div class="col-1">&nbsp;</div>
         <div class="col-9">
-            <table id="mediaList">
+            <table class="site_table_color" id="mediaList">
                 <thead>
-                    <tr> <th>Track no.</th><th>Posted</th><th>User</th><th>Media</th><th>Controls</th> </tr>
+                    <tr class="site_text_color_2 site_table_color"> <th>Track no.</th><th>Posted</th><th>User</th><th>Media</th><th>Controls</th> </tr>
                 </thead>
-                <tbody>
+                <tbody class="site_text_color_2 song_color">
                     @for (int i = 0; i < array.Length; i++)
                     {
                         var media = array[i];
@@ -89,9 +93,9 @@
                                 }
                             }
                             <td>
-                                <button id="play_@i" onclick="play('@i');">Play</button>
-                                <button id="pause_@i" onclick="pause('@i')">Pause</button>
-                                <button id="remove_@i" onclick="remove('@i');">Remove</button>
+                                <button  class="Button_Blue" id="play_@i" onclick="play('@i');">Play</button>
+                                <button  class="Button_Green" id="pause_@i" onclick="pause('@i')">Pause</button>
+                                <button  class="Button_Red" id="remove_@i" onclick="remove('@i');">Remove</button>
                             </td>
                         </tr>
                     }
@@ -108,11 +112,11 @@
     <div class="row">
         <div class="col-1">&nbsp;</div>
         <div class="col-9">
-            <table id="userList">
+            <table class="site_table_color" id="userList">
                 <thead>
-                    <tr> <th>Name</th><th>Joined</th><th>Role</th><th>Action</th><th>Status</th> </tr>
+                    <tr class="site_text_color_2 site_table_color"> <th>Name</th><th>Joined</th><th>Role</th><th>Action</th><th>Status</th> </tr>
                 </thead>
-                <tbody>
+                <tbody class="site_text_color_2 site_table_color">
                     @for (int i = 0; i < userArray.Length; i++)
                     {
                         var user = userArray[i];
@@ -123,10 +127,10 @@
                                 <td>@user.Joined.ToString("MM/dd/yyyy HH:mm")</td>
                                 <td>@user.Role</td>
                                 <td>
-                                    <button id="promote_@user.Name" onclick="promote('@user.Name');">Promote</button>
-                                    <button id="block_@user.Name" onclick="block('@user.Name');">Block</button>
-                                    <button id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
-                                    <button id="demote_@user.Name" onclick="demote('@user.Name');">Demote</button>
+                                    <button class="Button_Blue" id="promote_@user.Name" onclick="promote('@user.Name');">Promote</button>
+                                    <button class="Button_Red" id="block_@user.Name" onclick="block('@user.Name');">Block</button>
+                                    <button class="Button_Orange" id="remove_media_of_@user.Name" onclick="remove_media_of('@user.Name');">Remove Media(s)</button>
+                                    <button class="Button_Red" id="demote_@user.Name" onclick="demote('@user.Name');">Demote</button>
                                 </td>
                                 <td>@user.Status</td>
                             </tr>
