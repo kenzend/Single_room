@@ -22,8 +22,7 @@ Peers Helped:
 None so far.
 
 Peers Consulted:
-
-None so far.
+Visual design assistance from @Globin347.
 
 Acknowledgements:
 
