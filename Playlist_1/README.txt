@@ -12,7 +12,7 @@ Github Page: https://github.com/kenzend/Single_room
 
 
 Comments to Evaluators:
-N/A
+It's highly recommended to use the service with an account so that you can use every feature.
 
 Assignment Specific Write-up:
 N/A
