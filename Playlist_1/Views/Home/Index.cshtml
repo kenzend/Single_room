@@ -1,34 +1,30 @@
-﻿@{
+﻿<!--
+  Author:    Thang Nguyen
+  Date:      11/12/2020
+  Course:    CS 4540, University of Utah, School of Computing
+  Copyright: CS 4540 and Thang Nguyen - This work may not be copied for use in Academic Coursework.
+  I, Thang Nguyen, certify that I wrote this code from scratch and did not copy it in part or whole from
+  another source.  Any references used in the completion of the assignment are cited in my README file.
+  File Contents
+     Home page view
+-->
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center site_text_color">
     <h1 class="display-4">Welcome to the Online Playlist!</h1>
     <p>A tool for sharing music simultaneously</p>
+    <br />
+    <hr />
     <p>
+        We recommend you using our service with an account so that you can use all features that we have to offer!
     </p>
     <p>
+        <a class="btn btn-primary site_text_color" asp-area="" asp-controller="Room" asp-action="Index">
+            Jump into our music room >
+        </a>
     </p>
-    <table style="width: 100%">
-        <tr>
-            <td style="text-align: center">
-                <h1>Join a room:</h1>
-                <div class="container smol_container">
-                    <div class="form-group">
-                        <label for="room_name">Room Key</label>
-                        <input type="text" class="form-control" id="room_name" />
-                    </div>
-                </div>
-            </td>
-            <td style="text-align: center">
-                <h1>Start a new Room:</h1>
-                <div class="container smol_container" style="padding: 20px">
-
-                    <button type="button" class="btn btn-primary btn-lg">Create a new Room</button>
-                </div>
-
-            </td>
-        </tr>
-    </table>
 
 </div>

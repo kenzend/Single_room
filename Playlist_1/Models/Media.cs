@@ -1,4 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿/**
+ * Author:    Thang Nguyen
+ * Date:      12/11/2020
+ * Course:    CS 4540, University of Utah, School of Computing
+ * Copyright: CS 4540 and Thang Nguyen - This work may not be copied for use in Academic Coursework.
+ *
+ * I, Thang Nguyen, certify that I wrote this code from scratch and did 
+ * not copy it in part or whole from another source.  Any references used 
+ * in the completion of the assignment are cited in my README file and in
+ * the appropriate method header.
+ *
+ * File Contents
+ * 
+ * Media model
+ */
+
+using Microsoft.AspNetCore.Http;
 using Playlist_1.Areas.Identity.Data;
 using System;
 using System.Collections.Generic;
@@ -12,33 +28,25 @@ namespace Playlist_1.Models
     {
         public string Link;
 
-        public double Duration = 0; // Could be useful
-
         public string Owner;
+
+        public string Title;
 
         public DateTime DatePosted;
 
-        public Media(string owner, string source, DateTime time)
+        public string Url = "";
+
+        public Media(string owner, string title, string source, DateTime time)
         {
             Link = source;
             Owner = owner;
+            Title = title;
             DatePosted = time;
-        }
-
-        //public Media(User owner, IFormFile file)
-        //{
-        //    MP3File = file;
-        //    Owner = owner;
-        //}
-
-        public void setDuration(double duration)
-        {
-            Duration = duration;
         }
 
         public string getYoutubeId()
         {
-            string url = Link;
+            string url = this.Url;
             Uri uri = new Uri(url);
 
             var query = HttpUtility.ParseQueryString(uri.Query);

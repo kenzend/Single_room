@@ -1,4 +1,20 @@
-﻿"use strict";
+﻿/**
+ * Author:    Thang Nguyen
+ * Date:      12/11/2020
+ * Course:    CS 4540, University of Utah, School of Computing
+ * Copyright: CS 4540 and Thang Nguyen - This work may not be copied for use in Academic Coursework.
+ *
+ * I, Thang Nguyen, certify that I wrote this code from scratch and did
+ * not copy it in part or whole from another source.  Any references used
+ * in the completion of the assignment are cited in my README file and in
+ * the appropriate method header.
+ *
+ * File Contents
+ *
+ * Signalr client library
+ */
+
+"use strict";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/playlisthub").build();
 
@@ -9,15 +25,12 @@ $("#postButton").hide();
 /**
  * What to do when a message comes from the Server
  */
-connection.on("ReceiveMedia", function (time, user, message) {
-    if (!message.includes("http")) {
-        $("#mediaList > tbody").append(`<tr id="${count}"><td style="text-align: center;">${count}</td><td>${time}</td><td>${user}</td><td><audio id="media_${count}" onended="playNext('${count}');" allow="autoplay" controls><source src="/room/${message}" /></audio></td><td><button id="play_${count}" onclick="play('${count}');">Play</button><button id="pause_${count}" onclick="pause('${count}');">Pause</button><button id="remove_${count}" onclick="remove('${count}');">Remove</button></td></tr>`);
-    }
+connection.on("ReceiveMedia", function (time, user, message, title, url) {
+    if (!url)
+        $("#mediaList > tbody").append(`<tr id="${count}" onclick="play('${count}');"><td style="text-align: center;">${count}</td><td>${time}</td><td>${user}</td><td>${title}</td><td><audio id="media_${count}" onended="playNext('${count}');" allow="autoplay" class="uninteractable" controls><source src="/room/${message}" /></audio></td><td><button id="remove_${count}" class="Button_Red" onclick="remove('${count}');event.stopPropagation();">Remove</button></td></tr>`);
     else
-    {
-        $("#mediaList > tbody").append(`<tr id="${count}"><td>${time}</td><td>${user}</td><td>${message}</td></tr>`);
-    }
-    
+        $("#mediaList > tbody").append(`<tr id="${count}" onclick="play('${count}');"><td style="text-align: center;">${count}</td><td>${time}</td><td>${user}</td><td>${title}</td><td><video width="300" height="80" id="media_${count}" onended="playNext('${count}');" allow="autoplay" class="uninteractable"><source src="/room/${message}" /></video></td><td><button id="remove_${count}" class="Button_Red" onclick="remove('${count}');event.stopPropagation();">Remove</button></td></tr>`);
+
     $(`#${count}`).hide();
     $(`#${count}`).fadeIn("slow");
 
@@ -108,8 +121,12 @@ connection
 $("#postButton").click(
     function (event) {
         var userStatus = document.getElementById(user).getElementsByTagName("td").item(4).innerText;
-        if (userStatus == "blocked")
+        if (userStatus == "blocked") {
+            document.getElementById('linkInput').value = null;
+            document.getElementById('fileInput').value = null;
             return;
+        }
+            
         var message = $("#linkInput").val();
         var input = document.getElementById('fileInput');
         var files = input.files;
@@ -119,7 +136,7 @@ $("#postButton").click(
             return;
         else if (message && files.length == 0) // only link
         {
-            connection.invoke("ShareMedia", user, message)
+            connection.invoke("ShareLink", user, message)
                 .catch(function (err) {
                     return console.error(err.toString());
                 });
@@ -141,8 +158,8 @@ $("#postButton").click(
                 contentType: false,
                 success: function (result) {
                     var j;
-                    for (j = 0; j < result.length; j++) {
-                        connection.invoke("ShareMedia", user, result[j])
+                    for (j = 0; j < result.length; j+=2) {
+                        connection.invoke("ShareMedia", user, result[j], result[j+1])
                             .catch(function (err) {
                                 return console.error(err.toString());
                             });
@@ -167,18 +184,25 @@ $("#postButton").click(
                 contentType: false,
                 success: function (result) {
                     var j;
-                    for (j = 0; j < result.length; j++) {
-                        connection.invoke("ShareMedia", user, result[j])
+                    for (j = 0; j < result.length; j+=2) {
+                        connection.invoke("ShareMedia", user, result[j], result[j+1])
                             .catch(function (err) {
                                 return console.error(err.toString());
                             });
                     }
+                    connection.invoke("ShareLink", user, message)
+                        .catch(function (err) {
+                            return console.error(err.toString());
+                        });
+                },
+                error: function () {
+                    connection.invoke("ShareLink", user, message)
+                        .catch(function (err) {
+                            return console.error(err.toString());
+                        });
                 }
             });
-            connection.invoke("ShareMedia", user, message)
-                .catch(function (err) {
-                    return console.error(err.toString());
-                });
+            
         }
         document.getElementById('linkInput').value = null;
         document.getElementById('fileInput').value = null;
@@ -193,6 +217,9 @@ function remove(index) {
 
 $('#play_from_beginning').click(
     function (event) {
+        var userRole = document.getElementById(user).getElementsByTagName("td").item(2).innerText;
+        if (userRole == "Anon")
+            return;
         var currPlay = $('#currentlyPlayingIndex').html();
         document.getElementById("pause").click();
         connection.invoke("ResetCurrentTime", currPlay)
@@ -218,7 +245,7 @@ $('#play').click(
 $('#pause').click(
     function (event) {
         var currentlyPlaying = $('#currentlyPlayingIndex').html();
-        connection.invoke("Pause", currentlyPlaying)
+        connection.invoke("Pause", user, currentlyPlaying)
             .catch(function (err) {
                 return console.error(err.toString());
             });
@@ -226,6 +253,9 @@ $('#pause').click(
 
 $('#next').click(
     function (event) {
+        var userRole = document.getElementById(user).getElementsByTagName("td").item(2).innerText;
+        if (userRole == "Anon")
+            return;
         var currentlyPlaying = $('#currentlyPlayingIndex').html();
         playNext(currentlyPlaying);
     });
@@ -255,6 +285,9 @@ function playNext(currentIndex) {
 }
 
 function play(index) {
+    var userRole = document.getElementById(user).getElementsByTagName("td").item(2).innerText;
+    if (userRole == "Anon")
+        return;
     var currPlay = $('#currentlyPlayingIndex').html();
     document.getElementById("pause").click();
     connection.invoke("ResetCurrentTime", currPlay)
@@ -268,7 +301,7 @@ function play(index) {
 }
 
 function pause(index) {
-    connection.invoke("Pause", index)
+    connection.invoke("Pause", user, index)
         .catch(function (err) {
             return console.error(err.toString());
         });
