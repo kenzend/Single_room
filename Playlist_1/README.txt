@@ -12,8 +12,7 @@ Github Page: https://github.com/kenzend/Single_room
 
 
 Comments to Evaluators:
-Currently not working since media files such as .mp3 and .mp4 cannot be uploaded in the Production environment of EC2 instance,
-it works perfectly fine in the Development environment though (if you are Nathan, I am sorry :( )
+N/A
 
 Assignment Specific Write-up:
 N/A

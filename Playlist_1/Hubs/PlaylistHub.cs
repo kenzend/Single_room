@@ -325,7 +325,7 @@ namespace Playlist_1.Hubs
             YouTube ytb = YouTube.Default;
             var video = await ytb.GetVideoAsync(url);
             string wwwRoot = _hostEnvironment.WebRootPath;
-            Directory.CreateDirectory(Path.Combine(wwwRoot, "room"));
+            //Directory.CreateDirectory(Path.Combine(wwwRoot, "room"));
             await File.WriteAllBytesAsync(Path.Combine(wwwRoot, "room", "Playlist_Room_" + index.ToString() + video.FileExtension), await video.GetBytesAsync());
 
             result = new Tuple<string, string>(video.Title, "Playlist_Room_" + index.ToString() + video.FileExtension);

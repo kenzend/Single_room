@@ -47,7 +47,7 @@ namespace Playlist_1.Controllers
             List<string> result = new List<string>();
             string wwwRoot = _hostEnvironment.WebRootPath;
             int count = Program.room.Playlist.Count;
-            Directory.CreateDirectory(Path.Combine(wwwRoot, "room"));
+            //Directory.CreateDirectory(Path.Combine(wwwRoot, "room"));
 
             foreach (IFormFile file in files)
             {
